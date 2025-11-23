@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+.home-container {
+  margin-left: 250px;  /* same as sidebar width */
+  padding: 20px;
+}
