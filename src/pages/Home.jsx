@@ -28,7 +28,6 @@ function Home() {
 
   return (
     <div className="home-container">
-      <h1>Admin Panel</h1>
 
       <input type="file" onChange={(e) => setFile(e.target.files[0])} />
       <br /><br />

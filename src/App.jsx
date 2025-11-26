@@ -9,8 +9,10 @@ import {
   Navigate,
 } from "react-router-dom";
 
+import Layout from "./pages/Layout";
 import Dashboard from "./pages/Dashboard";
-import Sidebar from "./pages/Sidebar";
+import Sidebar from "./components/Sidebar";
+import Nabvar from './components/Navbar'
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Programs from "./pages/Programs";
@@ -28,18 +30,7 @@ const ProtectedRoute = ({ children }) => {
 
 const App = () => {
 
-  const [jokes,setJokes] = useState([])
-
-  useEffect(() => {
-    axios.get('http://localhost:3000/jokes')
-    .then((response) => {
-      setJokes(response.data) // no need to do .json and all in axios
-    })
-    // setJokes ne jokes array me set kar diya api se jokes data le ke
-    .catch((error) => {
-      console.log(error)
-    })
-  })
+  
 
 
   return (
@@ -53,7 +44,7 @@ const App = () => {
           path="/*"
           element={
             <ProtectedRoute>
-              <Sidebar />
+              <Layout />
             </ProtectedRoute>
           }
         >

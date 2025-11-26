@@ -11,12 +11,12 @@ const Auth = () => {
     e.preventDefault();
 
     // Dummy auth — replace with backend API later
-    if (email === "admin@babycare.com" && password === "admin123") {
+    // if (email === "admin@babycare.com" && password === "admin123") {
       localStorage.setItem("token", "dummyToken123"); // mark as logged in
-      navigate("/dashboard"); // redirect to admin
-    } else {
-      alert("Invalid credentials");
-    }
+      navigate("/dashboard"); // redirect to admin  
+    // } else {
+    //   alert("Invalid credentials");
+    // }
   };
 
   return (
@@ -32,9 +32,9 @@ const Auth = () => {
               type="email"
               placeholder="Email"
               className="w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-400 focus:outline-none"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
+              // value={email}
+              // onChange={(e) => setEmail(e.target.value)}
+              // required
             />
           </div>
 
@@ -44,9 +44,9 @@ const Auth = () => {
               type="password"
               placeholder="Password"
               className="w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-pink-400 focus:outline-none"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
+              // value={password}
+              // onChange={(e) => setPassword(e.target.value)}
+              // required
             />
           </div>
 
