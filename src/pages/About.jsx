@@ -23,7 +23,7 @@ const [currentParagraph, setCurrentParagraph] = useState("");
   // LOAD HEADIMG
   const loadHeading = async () => {
   try {
-    const res = await fetch("https://babycare-admin-backend-ulfg.onrender.com/about/heading");
+    const res = await fetch("https://babycare-admin-backend-ulfg.onrender.com/about");
     const data = await res.json();
 
     if (data.success) {
@@ -67,7 +67,7 @@ const [currentParagraph, setCurrentParagraph] = useState("");
   // LOAD SUBHEADING
   const loadSubheading = async () => {
   try {
-    const res = await fetch("https://babycare-admin-backend-ulfg.onrender.com/about/subheading");
+    const res = await fetch("https://babycare-admin-backend-ulfg.onrender.com/about");
     const data = await res.json();
 
     if (data.success) {
@@ -113,7 +113,7 @@ const [currentParagraph, setCurrentParagraph] = useState("");
   // LOAD RIGHT IMAGE
 const loadRightImage = async () => {
   try {
-    const res = await fetch("https://babycare-admin-backend-ulfg.onrender.com/about/right-image");
+    const res = await fetch("https://babycare-admin-backend-ulfg.onrender.com/about");
     const data = await res.json();
 
     if (data.success) {
@@ -155,10 +155,10 @@ const uploadRightImage = async () => {
   // LOAD BACKGROUND IMAGE
 const loadBgImage = async () => {
   try {
-    const res = await fetch("https://babycare-admin-backend-ulfg.onrender.com/about/bg-image");
+    const res = await fetch("https://babycare-admin-backend-ulfg.onrender.com/about");
     const data = await res.json();
 
-    if (data.success) {
+    if (data.success && data.data?.bgImageUrl) {
       setBgImage(data.data.bgImageUrl); // Set the URL for preview
     }
   } catch (err) {
@@ -184,9 +184,12 @@ const uploadBgImage = async () => {
 
     const data = await res.json();
 
-    if (data.success) {
-      alert("Background image updated!");
-      setBgImage(data.data.bgImageUrl); // Update preview
+    if (data.success && data.data?.bgImageUrl) {
+        alert("Background image updated!");
+        setBgImage(data.data.bgImageUrl);
+    } else {
+        console.log("Upload response:", data);
+        alert("Failed to update background image");
     }
   } catch (error) {
     console.log("Error uploading background image:", error);
@@ -198,7 +201,7 @@ const uploadBgImage = async () => {
   // ===========================================================
   const loadParagraph = async () => {
     try {
-      const res = await fetch("https://babycare-admin-backend-ulfg.onrender.com/about/paragraph");
+      const res = await fetch("https://babycare-admin-backend-ulfg.onrender.com/about");
       const data = await res.json();
 
       if (data.success) {
