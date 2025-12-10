@@ -6,11 +6,18 @@ export default function About() {
   // states
   const [rightImage, setRightImage] = useState(null);       // URL for preview
   const [rightImageFile, setRightImageFile] = useState(null); // File selected for upload
+
   const [bgImage, setBgImage] = useState(null); // URL of the background image
   const [bgImageFile, setBgImageFile] = useState(null); // File selected for upload
-  const [paragraph, setParagraph] = useState("");
-  const [heading, setHeading] = useState("");
+
+  const [heading, setHeading] = useState("");      // textarea ke liye
+  const [currentHeading, setCurrentHeading] = useState(""); // current column ke liye
+
   const [subheading, setSubHeading] = useState("");
+const [currentSubheading, setCurrentSubheading] = useState("");
+
+const [paragraph, setParagraph] = useState("");
+const [currentParagraph, setCurrentParagraph] = useState("");
 
 
   // LOAD HEADIMG
@@ -21,6 +28,7 @@ export default function About() {
 
     if (data.success) {
       setHeading(data.data.heading || "");
+      setCurrentHeading(data.data.heading || "");
     }
   } catch (err) {
     console.log("Error loading heading:", err);
@@ -48,6 +56,8 @@ export default function About() {
 
     if (data.success) {
       alert("Heading updated!");
+      setHeading(data.data.heading || "");
+      setCurrentHeading(data.data.heading || "");
     }
   } catch (error) {
     console.log("Error updating heading:", error);
@@ -62,6 +72,7 @@ export default function About() {
 
     if (data.success) {
       setSubHeading(data.data.subheading || "");
+      setCurrentSubheading(data.data.subheading || "");
     }
   } catch (err) {
     console.log("Error loading subheading:", err);
@@ -91,6 +102,8 @@ export default function About() {
 
     if (data.success) {
       alert("Subheading updated!");
+      setSubHeading(data.data.subheading || "");
+      setCurrentSubheading(data.data.subheading || "");
     }
   } catch (error) {
     console.log("Error updating subheading:", error);
@@ -190,6 +203,7 @@ const uploadBgImage = async () => {
 
       if (data.success) {
         setParagraph(data.data.paragraph || "");
+        setCurrentParagraph(data.data.paragraph || "")
       }
     } catch (err) {
       console.log("Error loading paragraph:", err);
@@ -219,6 +233,8 @@ const uploadBgImage = async () => {
 
       if (data.success) {
         alert("Paragraph updated!");
+        setParagraph(data.data.paragraph || "");
+        setCurrentParagraph(data.data.paragraph || "")
       } else {
         alert("Failed to update paragraph");
       }
@@ -243,7 +259,7 @@ const uploadBgImage = async () => {
   const rows = [
     {
       label: "Heading",
-      current: <p>{heading || "No heading set"}</p>,
+      current: <p>{currentHeading || "No heading set"}</p>,
       input: (
         <textarea
           value={heading}
@@ -256,7 +272,7 @@ const uploadBgImage = async () => {
 
     {
       label: "Sub-Heading",
-      current: <p>{subheading || "No heading set"}</p>,
+      current: <p>{currentSubheading || "No heading set"}</p>,
       input: (
         <textarea
           value={subheading}
@@ -269,7 +285,7 @@ const uploadBgImage = async () => {
 
     {
       label: "Paragraph",
-      current: <p>{paragraph || "No paragraph set"}</p>,
+      current: <p>{currentParagraph || "No paragraph set"}</p>,
       input: (
         <textarea
           value={paragraph}
