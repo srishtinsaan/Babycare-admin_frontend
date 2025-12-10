@@ -275,7 +275,7 @@ const uploadBgImage = async () => {
 
     {
       label: "Sub-Heading",
-      current: <p>{currentSubheading || "No heading set"}</p>,
+      current: <p>{currentSubheading || "No subheading set"}</p>,
       input: (
         <textarea
           value={subheading}
