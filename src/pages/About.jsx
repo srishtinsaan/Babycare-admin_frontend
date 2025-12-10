@@ -278,7 +278,7 @@ const uploadBgImage = async () => {
       current: <p>{currentSubheading || "No subheading set"}</p>,
       input: (
         <textarea
-          value={subheading}
+          value={subHeading}
           onChange={(e) => setSubHeading(e.target.value)}
           className="w-full h-28 p-2 border rounded resize-none"
         />
