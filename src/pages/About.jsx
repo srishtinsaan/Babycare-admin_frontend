@@ -13,7 +13,7 @@ export default function About() {
   const [heading, setHeading] = useState("");      // textarea ke liye
   const [currentHeading, setCurrentHeading] = useState(""); // current column ke liye
 
-  const [subheading, setSubHeading] = useState("");
+  const [subHeading, setSubHeading] = useState("");
 const [currentSubheading, setCurrentSubheading] = useState("");
 
 const [paragraph, setParagraph] = useState("");
@@ -71,8 +71,8 @@ const [currentParagraph, setCurrentParagraph] = useState("");
     const data = await res.json();
 
     if (data.success) {
-      setSubHeading(data.data.subheading || "");
-      setCurrentSubheading(data.data.subheading || "");
+      setSubHeading(data.data.subHeading || "");
+      setCurrentSubheading(data.data.subHeading || "");
     }
   } catch (err) {
     console.log("Error loading subheading:", err);
@@ -83,7 +83,7 @@ const [currentParagraph, setCurrentParagraph] = useState("");
 // UPLOAD SUBHEADING
 
   const saveSubheading = async () => {
-  if (!subheading.trim()) {
+  if (!subHeading.trim()) {
     alert("Subheading cannot be empty!");
     return;
   }
@@ -94,7 +94,7 @@ const [currentParagraph, setCurrentParagraph] = useState("");
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subheading }),
+        body: JSON.stringify({ subHeading }),
       }
     );
 
@@ -102,8 +102,8 @@ const [currentParagraph, setCurrentParagraph] = useState("");
 
     if (data.success) {
       alert("Subheading updated!");
-      setSubHeading(data.data.subheading || "");
-      setCurrentSubheading(data.data.subheading || "");
+      setSubHeading(data.data.subHeading || "");
+      setCurrentSubheading(data.data.subHeading || "");
     }
   } catch (error) {
     console.log("Error updating subheading:", error);
