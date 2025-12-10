@@ -17,7 +17,7 @@ export default function Layout() {
       <div className="flex flex-col w-screen">
         <Navbar onMenuClick={() => setIsSidebarOpen(true)} />
 
-        <main className="bg-red-300 mt-16">
+        <main className=" lg:ml-64 mt-16">
           <Outlet />
         </main>
       </div>

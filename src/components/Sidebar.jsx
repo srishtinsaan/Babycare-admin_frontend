@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  LayoutDashboard,
-  X,
+import {  X,
   Home,
   Calendar,
   BookOpen,
@@ -32,13 +30,13 @@ const Sidebar = ({ isOpen, onClose }) => {
   }, []);
 
   const menuItems = [
-    { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
     { name: "Home", icon: Home, path: "/home" },
     { name: "About", icon: Info, path: "/about" },
     { name: "Programs", icon: BookOpen, path: "/programs" },
     { name: "Events", icon: Calendar, path: "/events" },
     { name: "Blogs", icon: FileText, path: "/blogs" },
     { name: "Team", icon: Users, path: "/team" },
+    { name: "Testimonials", icon: Settings, path: "/testimonials" },
     { name: "Settings", icon: Settings, path: "/settings" },
   ];
 

@@ -1,6 +1,3 @@
-import { useState } from "react"
-import axios from "axios"
-import { useEffect } from "react"
 
 import {
   BrowserRouter as Router,
@@ -10,9 +7,6 @@ import {
 } from "react-router-dom";
 
 import Layout from "./pages/Layout";
-import Dashboard from "./pages/Dashboard";
-import Sidebar from "./components/Sidebar";
-import Nabvar from './components/Navbar'
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Programs from "./pages/Programs";
@@ -21,6 +15,7 @@ import Blogs from "./pages/Blogs";
 import Team from "./pages/Team";
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
+import Testimonials from "./pages/Testimonials";
 
 // ✅ Protected route component
 const ProtectedRoute = ({ children }) => {
@@ -49,13 +44,13 @@ const App = () => {
           }
         >
           {/* Nested routes rendered inside Sidebar */}
-          <Route path="dashboard" element={<Dashboard />} />
           <Route path="home" element={<Home />} />
           <Route path="about" element={<About />} />
           <Route path="programs" element={<Programs />} />
           <Route path="events" element={<Events />} />
           <Route path="blogs" element={<Blogs />} />
           <Route path="team" element={<Team />} />
+          <Route path="testimonials" element={<Testimonials />} />
           <Route path="settings" element={<Settings />} />
         </Route>
       </Routes>
