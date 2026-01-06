@@ -6,13 +6,14 @@ export default function Home() {
   const [subHeading, setSubHeading] = useState("");
   const [bgImage, setBgImage] = useState(null);
   const [file, setFile] = useState(null);
-
+  const [leftBtn, setLeftBtn] = useState("");
+  const [rightBtn, setRightBtn] = useState("");
 
   // LOAD HOME DATA
   // ===========================================================
   const loadHomeData = async () => {
     try {
-      const res = await fetch("https://babycare-admin-backend-ulfg.onrender.com/home", {cache: "no-store"});
+      const res = await fetch("https://babycare-admin-backend-ulfg.onrender.com/home");
       const data = await res.json();
 
       if (data.success) {
@@ -41,7 +42,6 @@ export default function Home() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ heading }),
-        cache: "no-store"
       });
 
       const data = await res.json();
@@ -61,7 +61,6 @@ export default function Home() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ subHeading }),
-        cache: "no-store"
       });
 
       const data = await res.json();
@@ -86,7 +85,6 @@ export default function Home() {
       const res = await fetch("https://babycare-admin-backend-ulfg.onrender.com/home", {
         method: "POST",
         body: formData,
-        cache: "no-store"
       });
 
       const data = await res.json();
@@ -99,7 +97,43 @@ export default function Home() {
     }
   };
 
-  
+  // UPDATE LEFT BUTTON TEXT
+  // ===========================================================
+  const updateLeftBtn = async () => {
+    if (!leftBtn.trim()) return alert("Left button text cannot be empty!");
+
+    try {
+      const res = await fetch("https://babycare-admin-backend-ulfg.onrender.com/home", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ leftBtn }),
+      });
+
+      const data = await res.json();
+      if (data.success) alert("Left button text updated!");
+    } catch (error) {
+      console.log("Error updating left button text:", error);
+    }
+  };
+
+  // UPDATE RIGHT BUTTON TEXT
+  // ===========================================================
+  const updateRightBtn = async () => {
+    if (!rightBtn.trim()) return alert("Right button text cannot be empty!");
+
+    try {
+      const res = await fetch("https://babycare-admin-backend-ulfg.onrender.com/home", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rightBtn }),
+      });
+
+      const data = await res.json();
+      if (data.success) alert("Right button text updated!");
+    } catch (error) {
+      console.log("Error updating right button text:", error);
+    }
+  };
 
   // ROWS
   // ===========================================================
@@ -141,7 +175,7 @@ export default function Home() {
       button: <Button onClick={updateBgImage}>Update</Button>,
     },
 
-   
+    
   ];
 
   return (
@@ -163,7 +197,8 @@ export default function Home() {
               <td className="border p-3 text-center">{index + 1}</td>
               <td className="border p-3 font-semibold">{row.label}</td>
               <td className="border p-3 text-center">{row.current}</td>
-              
+              <td className="border p-3 text-center">{row.input}</td>
+              <td className="border p-3 text-center">{row.button}</td>
             </tr>
           ))}
         </tbody>
