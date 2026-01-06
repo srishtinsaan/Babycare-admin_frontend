@@ -6,85 +6,147 @@ export default function Programs() {
   const [subHeading, setSubHeading] = useState("");
 
   const [programs, setPrograms] = useState([
-    { title: "", desc: "", price: "", seats: "", lessons: "", hours: "", teacher: "", role: "", image: "", file: null },
-    { title: "", desc: "", price: "", seats: "", lessons: "", hours: "", teacher: "", role: "", image: "", file: null },
-    { title: "", desc: "", price: "", seats: "", lessons: "", hours: "", teacher: "", role: "", image: "", file: null }
+    { _id: "", title: "", desc: "", price: "", seats: "", lessons: "", hours: "", teacher: "", role: "", imageFile: null, imageUrl: "", teacherImgFile: null, teacherImg: ""},
+    { _id: "", title: "", desc: "", price: "", seats: "", lessons: "", hours: "", teacher: "", role: "", imageFile: null, imageUrl: "", teacherImgFile: null, teacherImg: ""},
+    { _id: "", title: "", desc: "", price: "", seats: "", lessons: "", hours: "", teacher: "", role: "", imageFile: null, imageUrl: "", teacherImgFile: null, teacherImg: ""}
   ]);
 
-  // ================================
-  // LOAD DATA
-  // ================================
-  const loadProgramData = async () => {
+  // Load for id
+  useEffect(() => {
+  async function loadPrograms() {
     try {
-      const res = await fetch("https://babycare-admin-backend-ulfg.onrender.com/programs");
+      const res = await fetch(
+        "https://babycare-admin-backend-ulfg.onrender.com/programs"
+      );
       const data = await res.json();
 
       if (data.success) {
-        setHeading(data.data.heading);
-        setSubHeading(data.data.subHeading);
-        setPrograms(data.data.programs);
+        setHeading(data.data.heading || "");
+        setSubHeading(data.data.subHeading || "");
+        setPrograms(data.data.programs || []);
       }
-    } catch (e) {
-      console.log(e);
+    } catch (err) {
+      console.log("Error loading programs:", err);
     }
-  };
+  }
 
-  useEffect(() => {
-    loadProgramData();
-  }, []);
+  loadPrograms();
+}, []);
 
-  // ================================
+
+
   // UPDATE HEADING
-  // ================================
   const updateHeading = async () => {
-    await fetch("https://babycare-admin-backend-ulfg.onrender.com/programs/heading", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ heading })
-    });
-    alert("Heading updated!");
-  };
+    if (!heading.trim()) {
+    alert("Heading cannot be empty!");
+    return;
+  }
 
-  // ================================
-  // UPDATE SUB-HEADING
-  // ================================
-  const updateSubHeading = async () => {
-    await fetch("https://babycare-admin-backend-ulfg.onrender.com/programs/subheading", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ subHeading })
-    });
-    alert("Sub Heading updated!");
-  };
-
-  // ================================
-  // UPDATE A PROGRAM BOX
-  // ================================
-  const updateProgram = async (index) => {
-    const program = programs[index];
-    const formData = new FormData();
-
-    Object.keys(program).forEach((key) => {
-      if (key === "file") {
-        if (program.file) formData.append("image", program.file);
-      } else {
-        formData.append(key, program[key]);
+  try {
+    const res = await fetch(
+      "https://babycare-admin-backend-ulfg.onrender.com/programs/heading",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ heading }),
       }
-    });
-
-    formData.append("index", index);
-
-    const res = await fetch("https://babycare-admin-backend-ulfg.onrender.com/programs/update", {
-      method: "POST",
-      body: formData
-    });
+    );
 
     const data = await res.json();
+
     if (data.success) {
-      alert(`Program ${index + 1} updated!`);
-      loadProgramData();
+      alert("Heading updated!");
+      setHeading(data.data.heading || "");
     }
+  } catch (error) {
+    console.log("Error updating heading:", error);
+  }
   };
+
+  // UPDATE SUB-HEADING
+  const updateSubHeading = async () => {
+    if (!subHeading.trim()) {
+    alert("Subheading cannot be empty!");
+    return;
+  }
+
+  try {
+    const res = await fetch(
+      "https://babycare-admin-backend-ulfg.onrender.com/programs/subheading",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subHeading }),
+      }
+    );
+
+    const data = await res.json();
+
+    if (data.success) {
+      alert("Subheading updated!");
+      setSubHeading(data.data.subHeading || "");
+    }
+  } catch (error) {
+    console.log("Error updating subheading:", error);
+  }
+  };
+
+  // UPDATE PROGRAM BOX
+  const updateProgram = async (index) => {
+  const program = programs[index];
+
+  if (!program._id) {
+    alert("Program ID missing");
+    return;
+  }
+
+  try {
+    const formData = new FormData();
+
+    // Append text fields
+    formData.append("title", program.title);
+    formData.append("description", program.desc);
+    formData.append("price", program.price);
+    formData.append("seats", program.seats);
+    formData.append("lessons", program.lessons);
+    formData.append("hours", program.hours);
+    formData.append("teacher_name", program.teacher);
+
+    // Append program image if exists
+    if (program.imageFile) {
+      formData.append("image", program.imageFile);
+    }
+
+    // Append teacher image if exists
+    if (program.teacherImgFile) {
+      formData.append("teacherImg", program.teacherImgFile);
+    }
+
+    const res = await fetch(
+      `https://babycare-admin-backend-ulfg.onrender.com/programs/item/${program._id}`,
+      {
+        method: "PATCH",
+        body: formData
+      }
+    );
+
+    const data = await res.json();
+
+    if (data.success) {
+      alert("Program updated successfully");
+
+      // Update UI image previews
+      const updated = [...programs];
+      if (data.data.imageUrl) updated[index].imageUrl = data.data.imageUrl;
+      if (data.data.teacherImg) updated[index].teacherImgUrl = data.data.teacherImg;
+      setPrograms(updated);
+    }
+  } catch (error) {
+    console.log("Error updating program:", error);
+  }
+};
+
+
 
   return (
     <div className="p-3">
@@ -93,7 +155,7 @@ export default function Programs() {
           <tr>
             <th className="border p-3">S. No.</th>
             <th className="border p-3">Field</th>
-            <th className="border p-3">Current</th>
+            <th className="border p-3">SubField</th>
             <th className="border p-3">New</th>
             <th className="border p-3">Action</th>
           </tr>
@@ -105,7 +167,7 @@ export default function Programs() {
           <tr>
             <td className="border p-3">1</td>
             <td className="border p-3 font-semibold">Heading</td>
-            <td className="border p-3">{heading}</td>
+            <td className="border p-3"></td>
             <td className="border p-3">
               <textarea className="w-full border p-2" value={heading} onChange={(e) => setHeading(e.target.value)} />
             </td>
@@ -116,7 +178,7 @@ export default function Programs() {
           <tr>
             <td className="border p-3">2</td>
             <td className="border p-3 font-semibold">Sub Heading</td>
-            <td className="border p-3">{subHeading}</td>
+            <td className="border p-3"></td>
             <td className="border p-3">
               <textarea className="w-full border p-2" value={subHeading} onChange={(e) => setSubHeading(e.target.value)} />
             </td>
@@ -138,7 +200,8 @@ export default function Programs() {
     <p><b>Lessons:</b></p>
     <p><b>Hours:</b></p>
     <p><b>Teacher:</b></p>
-    <p><b>Role:</b></p>
+    <p><b>Program Image:</b></p>
+    <p><b>Teacher Image:</b></p>
   </div>
 </td>
 
@@ -215,19 +278,18 @@ export default function Programs() {
                   }}
                 />
 
-                <input type="text" placeholder="Teacher Role"
-                  className="w-full border p-2 mb-1"
-                  value={p.role}
-                  onChange={(e) => {
-                    const updated = [...programs];
-                    updated[i].role = e.target.value;
-                    setPrograms(updated);
-                  }}
-                />
-
+                <b>Program Image:</b>
                 <input type="file" className="w-full" onChange={(e) => {
                   const updated = [...programs];
-                  updated[i].file = e.target.files[0];
+                  updated[i].imageFile = e.target.files[0];
+                  setPrograms(updated);
+                }} />
+
+                <br />
+                <b>Teacher Image:</b>
+                <input type="file" className="w-full" onChange={(e) => {
+                  const updated = [...programs];
+                  updated[i].teacherImgFile = e.target.files[0];
                   setPrograms(updated);
                 }} />
               </td>
