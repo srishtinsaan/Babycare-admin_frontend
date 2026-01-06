@@ -104,8 +104,8 @@ export default function Programs() {
     const formData = new FormData();
 
     // Append text fields
-    formData.append("title", program.title);
-    formData.append("description", program.desc);
+    formData.append("title", program.title || "");
+    formData.append("description", program.desc || "");
     formData.append("price", program.price);
     formData.append("seats", program.seats);
     formData.append("lessons", program.lessons);
