@@ -6,9 +6,9 @@ export default function Programs() {
   const [subHeading, setSubHeading] = useState("");
 
   const [programs, setPrograms] = useState([
-    { _id: "", title: "", desc: "", price: "", seats: "", lessons: "", hours: "", teacher: "", role: "", imageFile: null, imageUrl: "", teacherImgFile: null, teacherImg: ""},
-    { _id: "", title: "", desc: "", price: "", seats: "", lessons: "", hours: "", teacher: "", role: "", imageFile: null, imageUrl: "", teacherImgFile: null, teacherImg: ""},
-    { _id: "", title: "", desc: "", price: "", seats: "", lessons: "", hours: "", teacher: "", role: "", imageFile: null, imageUrl: "", teacherImgFile: null, teacherImg: ""}
+    { _id: "", title: "", description: "", price: "", seats: "", lessons: "", hours: "", teacher: "", role: "", imageFile: null, imageUrl: "", teacherImgFile: null, teacherImg: ""},
+    { _id: "", title: "", description: "", price: "", seats: "", lessons: "", hours: "", teacher: "", role: "", imageFile: null, imageUrl: "", teacherImgFile: null, teacherImg: ""},
+    { _id: "", title: "", description: "", price: "", seats: "", lessons: "", hours: "", teacher: "", role: "", imageFile: null, imageUrl: "", teacherImgFile: null, teacherImg: ""}
   ]);
 
   // Load for id
@@ -105,7 +105,7 @@ export default function Programs() {
 
     // Append text fields
     formData.append("title", program.title || "");
-    formData.append("description", program.desc || "");
+    formData.append("description", program.description || "");
     formData.append("price", program.price);
     formData.append("seats", program.seats);
     formData.append("lessons", program.lessons);
@@ -121,6 +121,12 @@ export default function Programs() {
     if (program.teacherImgFile) {
       formData.append("teacherImg", program.teacherImgFile);
     }
+
+    // after building formData, before fetch
+for (let pair of formData.entries()) {
+  console.log(pair[0], ":", pair[1]);
+}
+
 
     const res = await fetch(
       `https://babycare-admin-backend-ulfg.onrender.com/programs/item/${program._id}`,
@@ -138,7 +144,7 @@ export default function Programs() {
       // Update UI image previews
       const updated = [...programs];
       if (data.data.imageUrl) updated[index].imageUrl = data.data.imageUrl;
-      if (data.data.teacherImg) updated[index].teacherImgUrl = data.data.teacherImg;
+      if (data.data.teacherImg) updated[index].teacherImg = data.data.teacherImg;
       setPrograms(updated);
     }
   } catch (error) {
@@ -220,10 +226,10 @@ export default function Programs() {
 
                 <textarea placeholder="Description"
                   className="w-full border p-2 mb-1"
-                  value={p.desc}
+                  value={p.description}
                   onChange={(e) => {
                     const updated = [...programs];
-                    updated[i].desc = e.target.value;
+                    updated[i].description = e.target.value;
                     setPrograms(updated);
                   }}
                 />
