@@ -6,9 +6,7 @@ export default function Home() {
   const [subHeading, setSubHeading] = useState("");
   const [bgImage, setBgImage] = useState(null);
   const [file, setFile] = useState(null);
-  const [leftBtn, setLeftBtn] = useState("");
-  const [rightBtn, setRightBtn] = useState("");
-
+  
   // LOAD HOME DATA
   // ===========================================================
   const loadHomeData = async () => {
@@ -19,16 +17,14 @@ export default function Home() {
       if (data.success) {
         setHeading(data.data.heading || "");
         setSubHeading(data.data.subHeading || "");
-        setLeftBtn(data.data.leftBtn || "");
-        setRightBtn(data.data.rightBtn || "");
-        setBgImage(data.data.bgImage || null);
+        setBgImage(data.data.bgImageUrl || null);
       }
     } catch (error) {
       console.log("Error loading home:", error);
     }
   };
 
-  useEffect(() => {
+  useEffect(() => { 
     loadHomeData();
   }, []);
 
@@ -90,50 +86,16 @@ export default function Home() {
       const data = await res.json();
       if (data.success) {
         alert("Background image updated!");
-        setBgImage(data.data.bgImage);
+        setBgImage(data.data.bgImageUrl);
       }
     } catch (error) {
       console.log("Error uploading background image:", error);
     }
   };
 
-  // UPDATE LEFT BUTTON TEXT
-  // ===========================================================
-  const updateLeftBtn = async () => {
-    if (!leftBtn.trim()) return alert("Left button text cannot be empty!");
+  
 
-    try {
-      const res = await fetch("https://babycare-admin-backend-ulfg.onrender.com/home", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ leftBtn }),
-      });
-
-      const data = await res.json();
-      if (data.success) alert("Left button text updated!");
-    } catch (error) {
-      console.log("Error updating left button text:", error);
-    }
-  };
-
-  // UPDATE RIGHT BUTTON TEXT
-  // ===========================================================
-  const updateRightBtn = async () => {
-    if (!rightBtn.trim()) return alert("Right button text cannot be empty!");
-
-    try {
-      const res = await fetch("https://babycare-admin-backend-ulfg.onrender.com/home", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rightBtn }),
-      });
-
-      const data = await res.json();
-      if (data.success) alert("Right button text updated!");
-    } catch (error) {
-      console.log("Error updating right button text:", error);
-    }
-  };
+  
 
   // ROWS
   // ===========================================================
