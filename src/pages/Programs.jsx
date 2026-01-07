@@ -5,10 +5,10 @@ const EMPTY_PROGRAM = {
   _id: null,
   title: "",
   description: "",
-  price: null,
-  seats: null,
-  lessons: null,
-  hours: null,
+  price: "",
+seats: "",
+lessons: "",
+hours: "",
   teacher_name: "",
   imageFile: null,
   teacherImgFile: null,
@@ -102,13 +102,20 @@ export default function Programs() {
     }
 
     const formData = new FormData();
-    formData.append("title", p.title);
-    formData.append("description", p.description);
-    formData.append("price", p.price);
-    formData.append("seats", p.seats);
-    formData.append("lessons", p.lessons);
-    formData.append("hours", p.hours);
-    formData.append("teacher_name", p.teacher_name);
+    if (p.price !== null && p.price !== "")
+   formData.append("price", p.price);
+
+ if (p.seats !== null && p.seats !== "")
+   formData.append("seats", p.seats);
+
+ if (p.lessons !== null && p.lessons !== "")
+   formData.append("lessons", p.lessons);
+
+ if (p.hours !== null && p.hours !== "")
+   formData.append("hours", p.hours);
+
+ if (p.teacher_name)
+   formData.append("teacher_name", p.teacher_name);
 
     if (p.imageFile) formData.append("image", p.imageFile);
     if (p.teacherImgFile) formData.append("teacherImg", p.teacherImgFile);
@@ -206,7 +213,7 @@ export default function Programs() {
 );
                   }} />
 
-                <input className="w-full border p-1" placeholder="Price" value={p.price}
+                <input className="w-full border p-1" type="number" placeholder="Price" value={p.price}
                   onChange={e => {
                     setPrograms(prev =>
   prev.map((item, idx) =>
@@ -215,7 +222,7 @@ export default function Programs() {
 );
                   }} />
 
-                <input className="w-full border p-1" placeholder="Seats" value={p.seats}
+                <input className="w-full border p-1" type="number" placeholder="Seats" value={p.seats}
                   onChange={e => {
                     setPrograms(prev =>
   prev.map((item, idx) =>
@@ -224,7 +231,7 @@ export default function Programs() {
 );
                   }} />
 
-                <input className="w-full border p-1" placeholder="Lessons" value={p.lessons}
+                <input className="w-full border p-1" type="number" placeholder="Lessons" value={p.lessons}
                   onChange={e => {
                     setPrograms(prev =>
   prev.map((item, idx) =>
@@ -233,7 +240,7 @@ export default function Programs() {
 );
                   }} />
 
-                <input className="w-full border p-1" placeholder="Hours" value={p.hours}
+                <input className="w-full border p-1" type="number" placeholder="Hours" value={p.hours}
                   onChange={e => {
 setPrograms(prev =>
   prev.map((item, idx) =>
@@ -252,14 +259,14 @@ setPrograms(prev =>
                 <input type="file" onChange={e => {
 setPrograms(prev =>
   prev.map((item, idx) =>
-    idx === i ? { ...item, imageFile: e.target.value } : item
+    idx === i ? { ...item, imageFile: e.target.files[0] } : item
   )
 );                }} />
 
                 <input type="file" onChange={e => {
 setPrograms(prev =>
   prev.map((item, idx) =>
-    idx === i ? { ...item, teacherImgFile: e.target.value } : item
+    idx === i ? { ...item, teacherImgFile: e.target.files[0] } : item
   )
 );                }} />
               </td>
