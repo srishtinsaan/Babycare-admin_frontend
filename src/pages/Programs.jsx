@@ -40,15 +40,13 @@ export default function Programs() {
 
           const apiPrograms = data.data.programs || [];
 
-          if (apiPrograms.length === 0) {
-            setPrograms([
-              { ...EMPTY_PROGRAM },
-              { ...EMPTY_PROGRAM },
-              { ...EMPTY_PROGRAM }
-            ]);
-          } else {
-            setPrograms(apiPrograms);
-          }
+          const filledPrograms = [...apiPrograms];
+
+while (filledPrograms.length < 3) {
+  filledPrograms.push({ ...EMPTY_PROGRAM });
+}
+
+setPrograms(filledPrograms.slice(0, 3));
         }
       } catch (err) {
         console.log("Load error:", err);
