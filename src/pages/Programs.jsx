@@ -100,6 +100,10 @@ setPrograms(filledPrograms.slice(0, 3));
     }
 
     const formData = new FormData();
+
+formData.append("title", p.title);
+formData.append("description", p.description);    
+
     if (p.price !== null && p.price !== "")
    formData.append("price", p.price);
 
