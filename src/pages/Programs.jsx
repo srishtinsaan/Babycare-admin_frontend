@@ -9,7 +9,7 @@ const EMPTY_PROGRAM = {
   seats: "",
   lessons: "",
   hours: "",
-  teacher: "",
+  teacher_name: "",
   imageFile: null,
   teacherImgFile: null,
   imageUrl: "",
@@ -108,7 +108,7 @@ export default function Programs() {
     formData.append("seats", p.seats);
     formData.append("lessons", p.lessons);
     formData.append("hours", p.hours);
-    formData.append("teacher_name", p.teacher);
+    formData.append("teacher_name", p.teacher_name);
 
     if (p.imageFile) formData.append("image", p.imageFile);
     if (p.teacherImgFile) formData.append("teacherImg", p.teacherImgFile);
@@ -189,46 +189,79 @@ export default function Programs() {
               <td className="border p-3 space-y-1">
                 <input className="w-full border p-1" placeholder="Title" value={p.title}
                   onChange={e => {
-                    const x = [...programs]; x[i].title = e.target.value; setPrograms(x);
+                    setPrograms(prev =>
+  prev.map((item, idx) =>
+    idx === i ? { ...item, title: e.target.value } : item
+  )
+);
+
                   }} />
 
                 <textarea className="w-full border p-1" placeholder="Description" value={p.description}
                   onChange={e => {
-                    const x = [...programs]; x[i].description = e.target.value; setPrograms(x);
+                    setPrograms(prev =>
+  prev.map((item, idx) =>
+    idx === i ? { ...item, description: e.target.value } : item
+  )
+);
                   }} />
 
                 <input className="w-full border p-1" placeholder="Price" value={p.price}
                   onChange={e => {
-                    const x = [...programs]; x[i].price = e.target.value; setPrograms(x);
+                    setPrograms(prev =>
+  prev.map((item, idx) =>
+    idx === i ? { ...item, price: e.target.value } : item
+  )
+);
                   }} />
 
                 <input className="w-full border p-1" placeholder="Seats" value={p.seats}
                   onChange={e => {
-                    const x = [...programs]; x[i].seats = e.target.value; setPrograms(x);
+                    setPrograms(prev =>
+  prev.map((item, idx) =>
+    idx === i ? { ...item, seats: e.target.value } : item
+  )
+);
                   }} />
 
                 <input className="w-full border p-1" placeholder="Lessons" value={p.lessons}
                   onChange={e => {
-                    const x = [...programs]; x[i].lessons = e.target.value; setPrograms(x);
+                    setPrograms(prev =>
+  prev.map((item, idx) =>
+    idx === i ? { ...item, lessons: e.target.value } : item
+  )
+);
                   }} />
 
                 <input className="w-full border p-1" placeholder="Hours" value={p.hours}
                   onChange={e => {
-                    const x = [...programs]; x[i].hours = e.target.value; setPrograms(x);
-                  }} />
+setPrograms(prev =>
+  prev.map((item, idx) =>
+    idx === i ? { ...item, hours: e.target.value } : item
+  )
+);                  }} />
 
-                <input className="w-full border p-1" placeholder="Teacher Name" value={p.teacher}
+                <input className="w-full border p-1" placeholder="Teacher Name" value={p.teacher_name}
                   onChange={e => {
-                    const x = [...programs]; x[i].teacher = e.target.value; setPrograms(x);
-                  }} />
+setPrograms(prev =>
+  prev.map((item, idx) =>
+    idx === i ? { ...item, teacher_name: e.target.value } : item
+  )
+);                  }} />
 
                 <input type="file" onChange={e => {
-                  const x = [...programs]; x[i].imageFile = e.target.files[0]; setPrograms(x);
-                }} />
+setPrograms(prev =>
+  prev.map((item, idx) =>
+    idx === i ? { ...item, imageFile: e.target.value } : item
+  )
+);                }} />
 
                 <input type="file" onChange={e => {
-                  const x = [...programs]; x[i].teacherImgFile = e.target.files[0]; setPrograms(x);
-                }} />
+setPrograms(prev =>
+  prev.map((item, idx) =>
+    idx === i ? { ...item, teacherImgFile: e.target.value } : item
+  )
+);                }} />
               </td>
 
               <td className="border p-3">
