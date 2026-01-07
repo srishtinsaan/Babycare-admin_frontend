@@ -1,311 +1,243 @@
 import { useState, useEffect } from "react";
 import Button from "../components/Button";
 
+const EMPTY_PROGRAM = {
+  _id: null,
+  title: "",
+  description: "",
+  price: "",
+  seats: "",
+  lessons: "",
+  hours: "",
+  teacher: "",
+  imageFile: null,
+  teacherImgFile: null,
+  imageUrl: "",
+  teacherImg: ""
+};
+
 export default function Programs() {
   const [heading, setHeading] = useState("");
   const [subHeading, setSubHeading] = useState("");
-
   const [programs, setPrograms] = useState([
-    { _id: "", title: "", description: "", price: "", seats: "", lessons: "", hours: "", teacher: "", role: "", imageFile: null, imageUrl: "", teacherImgFile: null, teacherImg: ""},
-    { _id: "", title: "", description: "", price: "", seats: "", lessons: "", hours: "", teacher: "", role: "", imageFile: null, imageUrl: "", teacherImgFile: null, teacherImg: ""},
-    { _id: "", title: "", description: "", price: "", seats: "", lessons: "", hours: "", teacher: "", role: "", imageFile: null, imageUrl: "", teacherImgFile: null, teacherImg: ""}
+    { ...EMPTY_PROGRAM },
+    { ...EMPTY_PROGRAM },
+    { ...EMPTY_PROGRAM }
   ]);
 
-  // Load for id
+  // ================= LOAD DATA =================
   useEffect(() => {
-  async function loadPrograms() {
-    try {
-      const res = await fetch(
-        "https://babycare-admin-backend-ulfg.onrender.com/programs"
-      );
-      const data = await res.json();
+    async function loadPrograms() {
+      try {
+        const res = await fetch(
+          "https://babycare-admin-backend-ulfg.onrender.com/programs"
+        );
+        const data = await res.json();
 
-      if (data.success) {
-        setHeading(data.data.heading || "");
-        setSubHeading(data.data.subHeading || "");
-        setPrograms(data.data.programs || []);
+        if (data.success) {
+          setHeading(data.data.heading || "");
+          setSubHeading(data.data.subHeading || "");
+
+          const apiPrograms = data.data.programs || [];
+
+          if (apiPrograms.length === 0) {
+            setPrograms([
+              { ...EMPTY_PROGRAM },
+              { ...EMPTY_PROGRAM },
+              { ...EMPTY_PROGRAM }
+            ]);
+          } else {
+            setPrograms(apiPrograms);
+          }
+        }
+      } catch (err) {
+        console.log("Load error:", err);
       }
-    } catch (err) {
-      console.log("Error loading programs:", err);
     }
-  }
 
-  loadPrograms();
-}, []);
+    loadPrograms();
+  }, []);
 
-
-
-  // UPDATE HEADING
+  // ================= UPDATE HEADING =================
   const updateHeading = async () => {
-    if (!heading.trim()) {
-    alert("Heading cannot be empty!");
-    return;
-  }
+    if (!heading.trim()) return alert("Heading required");
 
-  try {
     const res = await fetch(
       "https://babycare-admin-backend-ulfg.onrender.com/programs/heading",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ heading }),
+        body: JSON.stringify({ heading })
       }
     );
 
     const data = await res.json();
-
-    if (data.success) {
-      alert("Heading updated!");
-      setHeading(data.data.heading || "");
-    }
-  } catch (error) {
-    console.log("Error updating heading:", error);
-  }
+    if (data.success) alert("Heading updated");
   };
 
-  // UPDATE SUB-HEADING
+  // ================= UPDATE SUBHEADING =================
   const updateSubHeading = async () => {
-    if (!subHeading.trim()) {
-    alert("Subheading cannot be empty!");
-    return;
-  }
+    if (!subHeading.trim()) return alert("SubHeading required");
 
-  try {
     const res = await fetch(
       "https://babycare-admin-backend-ulfg.onrender.com/programs/subheading",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subHeading }),
+        body: JSON.stringify({ subHeading })
       }
     );
 
     const data = await res.json();
-
-    if (data.success) {
-      alert("Subheading updated!");
-      setSubHeading(data.data.subHeading || "");
-    }
-  } catch (error) {
-    console.log("Error updating subheading:", error);
-  }
+    if (data.success) alert("SubHeading updated");
   };
 
-  // UPDATE PROGRAM BOX
-  const updateProgram = async (index) => {
-  const program = programs[index];
+  // ================= ADD / UPDATE PROGRAM =================
+  const saveProgram = async (index) => {
+    const p = programs[index];
 
-  if (!program._id) {
-    alert("Program ID missing");
-    return;
-  }
+    if (!p.title.trim()) {
+      alert("Title is required");
+      return;
+    }
 
-  try {
     const formData = new FormData();
+    formData.append("title", p.title);
+    formData.append("description", p.description);
+    formData.append("price", p.price);
+    formData.append("seats", p.seats);
+    formData.append("lessons", p.lessons);
+    formData.append("hours", p.hours);
+    formData.append("teacher_name", p.teacher);
 
-    // Append text fields
-    formData.append("title", program.title || "");
-    formData.append("description", program.description || "");
-    formData.append("price", program.price);
-    formData.append("seats", program.seats);
-    formData.append("lessons", program.lessons);
-    formData.append("hours", program.hours);
-    formData.append("teacher_name", program.teacher);
+    if (p.imageFile) formData.append("image", p.imageFile);
+    if (p.teacherImgFile) formData.append("teacherImg", p.teacherImgFile);
 
-    // Append program image if exists
-    if (program.imageFile) {
-      formData.append("image", program.imageFile);
-    }
+    const url = p._id
+      ? `https://babycare-admin-backend-ulfg.onrender.com/programs/item/${p._id}`
+      : `https://babycare-admin-backend-ulfg.onrender.com/programs/item`;
 
-    // Append teacher image if exists
-    if (program.teacherImgFile) {
-      formData.append("teacherImg", program.teacherImgFile);
-    }
+    const method = p._id ? "PATCH" : "POST";
 
-    // after building formData, before fetch
-for (let pair of formData.entries()) {
-  console.log(pair[0], ":", pair[1]);
-}
-
-
-    const res = await fetch(
-      `https://babycare-admin-backend-ulfg.onrender.com/programs/item/${program._id}`,
-      {
-        method: "PATCH",
-        body: formData
-      }
-    );
+    const res = await fetch(url, {
+      method,
+      body: formData
+    });
 
     const data = await res.json();
 
     if (data.success) {
-      alert("Program updated successfully");
-
-      // Update UI image previews
-      const updated = [...programs];
-      if (data.data.imageUrl) updated[index].imageUrl = data.data.imageUrl;
-      if (data.data.teacherImg) updated[index].teacherImg = data.data.teacherImg;
-      setPrograms(updated);
+      alert(p._id ? "Program updated" : "Program added");
+      window.location.reload();
+    } else {
+      alert(data.message || "Something went wrong");
     }
-  } catch (error) {
-    console.log("Error updating program:", error);
-  }
-};
+  };
 
-
-
+  // ================= UI =================
   return (
     <div className="p-3">
       <table className="w-full border border-gray-300 border-collapse">
         <thead>
           <tr>
-            <th className="border p-3">S. No.</th>
+            <th className="border p-3">#</th>
             <th className="border p-3">Field</th>
-            <th className="border p-3">SubField</th>
-            <th className="border p-3">New</th>
+            <th className="border p-3">Data</th>
             <th className="border p-3">Action</th>
           </tr>
         </thead>
 
         <tbody>
-
           {/* HEADING */}
           <tr>
             <td className="border p-3">1</td>
-            <td className="border p-3 font-semibold">Heading</td>
-            <td className="border p-3"></td>
+            <td className="border p-3">Heading</td>
             <td className="border p-3">
-              <textarea className="w-full border p-2" value={heading} onChange={(e) => setHeading(e.target.value)} />
+              <textarea
+                className="w-full border p-2"
+                value={heading}
+                onChange={(e) => setHeading(e.target.value)}
+              />
             </td>
-            <td className="border p-3"><Button onClick={updateHeading}>Update</Button></td>
+            <td className="border p-3">
+              <Button onClick={updateHeading}>Update</Button>
+            </td>
           </tr>
 
           {/* SUBHEADING */}
           <tr>
             <td className="border p-3">2</td>
-            <td className="border p-3 font-semibold">Sub Heading</td>
-            <td className="border p-3"></td>
+            <td className="border p-3">Sub Heading</td>
             <td className="border p-3">
-              <textarea className="w-full border p-2" value={subHeading} onChange={(e) => setSubHeading(e.target.value)} />
+              <textarea
+                className="w-full border p-2"
+                value={subHeading}
+                onChange={(e) => setSubHeading(e.target.value)}
+              />
             </td>
-            <td className="border p-3"><Button onClick={updateSubHeading}>Update</Button></td>
+            <td className="border p-3">
+              <Button onClick={updateSubHeading}>Update</Button>
+            </td>
           </tr>
 
-          {/* PROGRAM BOXES */}
+          {/* PROGRAMS */}
           {programs.map((p, i) => (
             <tr key={i}>
               <td className="border p-3">{i + 3}</td>
-              <td className="border p-3 font-semibold">Program {i + 1}</td>
+              <td className="border p-3">Program {i + 1}</td>
 
-              <td className="border p-3">
-  <div className="space-y-1 text-gray-700">
-    <p><b>Title:</b></p>
-    <p><b>Desc:</b></p>
-    <p><b>Price:</b></p>
-    <p><b>Seats:</b></p>
-    <p><b>Lessons:</b></p>
-    <p><b>Hours:</b></p>
-    <p><b>Teacher:</b></p>
-    <p><b>Program Image:</b></p>
-    <p><b>Teacher Image:</b></p>
-  </div>
-</td>
+              <td className="border p-3 space-y-1">
+                <input className="w-full border p-1" placeholder="Title" value={p.title}
+                  onChange={e => {
+                    const x = [...programs]; x[i].title = e.target.value; setPrograms(x);
+                  }} />
 
+                <textarea className="w-full border p-1" placeholder="Description" value={p.description}
+                  onChange={e => {
+                    const x = [...programs]; x[i].description = e.target.value; setPrograms(x);
+                  }} />
 
-              <td className="border p-3">
+                <input className="w-full border p-1" placeholder="Price" value={p.price}
+                  onChange={e => {
+                    const x = [...programs]; x[i].price = e.target.value; setPrograms(x);
+                  }} />
 
-                <input type="text" placeholder="Title"
-                  className="w-full border p-2 mb-1"
-                  value={p.title}
-                  onChange={(e) => {
-                    const updated = [...programs];
-                    updated[i].title = e.target.value;
-                    setPrograms(updated);
-                  }}
-                />
+                <input className="w-full border p-1" placeholder="Seats" value={p.seats}
+                  onChange={e => {
+                    const x = [...programs]; x[i].seats = e.target.value; setPrograms(x);
+                  }} />
 
-                <textarea placeholder="Description"
-                  className="w-full border p-2 mb-1"
-                  value={p.description}
-                  onChange={(e) => {
-                    const updated = [...programs];
-                    updated[i].description = e.target.value;
-                    setPrograms(updated);
-                  }}
-                />
+                <input className="w-full border p-1" placeholder="Lessons" value={p.lessons}
+                  onChange={e => {
+                    const x = [...programs]; x[i].lessons = e.target.value; setPrograms(x);
+                  }} />
 
-                <input type="text" placeholder="Price"
-                  className="w-full border p-2 mb-1"
-                  value={p.price}
-                  onChange={(e) => {
-                    const updated = [...programs];
-                    updated[i].price = e.target.value;
-                    setPrograms(updated);
-                  }}
-                />
+                <input className="w-full border p-1" placeholder="Hours" value={p.hours}
+                  onChange={e => {
+                    const x = [...programs]; x[i].hours = e.target.value; setPrograms(x);
+                  }} />
 
-                <input type="text" placeholder="Seats"
-                  className="w-full border p-2 mb-1"
-                  value={p.seats}
-                  onChange={(e) => {
-                    const updated = [...programs];
-                    updated[i].seats = e.target.value;
-                    setPrograms(updated);
-                  }}
-                />
+                <input className="w-full border p-1" placeholder="Teacher Name" value={p.teacher}
+                  onChange={e => {
+                    const x = [...programs]; x[i].teacher = e.target.value; setPrograms(x);
+                  }} />
 
-                <input type="text" placeholder="Lessons"
-                  className="w-full border p-2 mb-1"
-                  value={p.lessons}
-                  onChange={(e) => {
-                    const updated = [...programs];
-                    updated[i].lessons = e.target.value;
-                    setPrograms(updated);
-                  }}
-                />
-
-                <input type="text" placeholder="Hours"
-                  className="w-full border p-2 mb-1"
-                  value={p.hours}
-                  onChange={(e) => {
-                    const updated = [...programs];
-                    updated[i].hours = e.target.value;
-                    setPrograms(updated);
-                  }}
-                />
-
-                <input type="text" placeholder="Teacher Name"
-                  className="w-full border p-2 mb-1"
-                  value={p.teacher}
-                  onChange={(e) => {
-                    const updated = [...programs];
-                    updated[i].teacher = e.target.value;
-                    setPrograms(updated);
-                  }}
-                />
-
-                <b>Program Image:</b>
-                <input type="file" className="w-full" onChange={(e) => {
-                  const updated = [...programs];
-                  updated[i].imageFile = e.target.files[0];
-                  setPrograms(updated);
+                <input type="file" onChange={e => {
+                  const x = [...programs]; x[i].imageFile = e.target.files[0]; setPrograms(x);
                 }} />
 
-                <br />
-                <b>Teacher Image:</b>
-                <input type="file" className="w-full" onChange={(e) => {
-                  const updated = [...programs];
-                  updated[i].teacherImgFile = e.target.files[0];
-                  setPrograms(updated);
+                <input type="file" onChange={e => {
+                  const x = [...programs]; x[i].teacherImgFile = e.target.files[0]; setPrograms(x);
                 }} />
               </td>
 
               <td className="border p-3">
-                <Button onClick={() => updateProgram(i)}>Update</Button>
+                <Button onClick={() => saveProgram(i)}>
+                  {p._id ? "Update" : "Add"}
+                </Button>
               </td>
             </tr>
           ))}
-
         </tbody>
       </table>
     </div>
