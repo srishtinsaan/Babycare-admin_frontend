@@ -104,10 +104,10 @@ formData.append("description", e.description);
       formData.append("date", e.date)
     }
     if(e.time){
-      formData.append("date", e.time)
+      formData.append("time", e.time)
     }
     if(e.location){
-      formData.append("date", e.location)
+      formData.append("location", e.location)
     }
 
 
