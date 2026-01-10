@@ -9,6 +9,7 @@ import {
 import Layout from "./pages/Layout";
 import Home from "./pages/Home";
 import About from "./pages/About";
+import Services from "./pages/Services"
 import Programs from "./pages/Programs";
 import Events from "./pages/Events";
 import Blogs from "./pages/Blogs";
@@ -46,6 +47,7 @@ const App = () => {
           {/* Nested routes rendered inside Sidebar */}
           <Route path="home" element={<Home />} />
           <Route path="about" element={<About />} />
+          <Route path="services" element={<Services />} />
           <Route path="programs" element={<Programs />} />
           <Route path="events" element={<Events />} />
           <Route path="blogs" element={<Blogs />} />

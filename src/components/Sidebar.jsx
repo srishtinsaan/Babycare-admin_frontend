@@ -2,10 +2,12 @@ import { useState, useEffect } from "react";
 import {  X,
   Home,
   Calendar,
+  Quote,
   BookOpen,
   Settings,
   Users,
   FileText,
+  MessageSquareQuote,
   Info,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
@@ -32,11 +34,12 @@ const Sidebar = ({ isOpen, onClose }) => {
   const menuItems = [
     { name: "Home", icon: Home, path: "/home" },
     { name: "About", icon: Info, path: "/about" },
+    { name: "Services", icon: Quote, path: "/services" },
     { name: "Programs", icon: BookOpen, path: "/programs" },
     { name: "Events", icon: Calendar, path: "/events" },
     { name: "Blogs", icon: FileText, path: "/blogs" },
     { name: "Team", icon: Users, path: "/team" },
-    { name: "Testimonials", icon: Settings, path: "/testimonials" },
+    { name: "Testimonials", icon: MessageSquareQuote, path: "/testimonials" },
     { name: "Settings", icon: Settings, path: "/settings" },
   ];
 
