@@ -1,172 +1,267 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "../components/Button";
+
+const EMPTY_EVENT = {
+  _id: null,
+  title: "",
+  description: "",
+  location : "",
+  date : "",
+  time : "",
+  imageFile: null,
+  imageUrl: "",
+};
 
 function Events() {
   const [heading, setHeading] = useState("");
-  const [subHeading, setSubHeading] = useState("");
-
-  // For 3 event boxes
-  const [events, setEvents] = useState([
-    { date: "", image: null, time: "", location: "", title: "", desc: "" },
-    { date: "", image: null, time: "", location: "", title: "", desc: "" },
-    { date: "", image: null, time: "", location: "", title: "", desc: "" }
-  ]);
-
-  function handleEventChange(index, field, value) {
-    const updated = [...events];
-    updated[index][field] = value;
-    setEvents(updated);
+    const [subHeading, setSubHeading] = useState("");
+    const [events, setEvents] = useState([
+      { ...EMPTY_EVENT },
+      { ...EMPTY_EVENT },
+      { ...EMPTY_EVENT }
+    ]);
+  
+  // ================= LOAD DATA =================
+    useEffect(() => {
+      async function loadEvents() {
+        try {
+          const res = await fetch(
+            "https://babycare-admin-backend-ulfg.onrender.com/events"
+          );
+          const data = await res.json();
+  
+          if (data.success) {
+            setHeading(data.data.heading || "");
+            setSubHeading(data.data.subHeading || "");
+  
+            const apiEvents = data.data.event || [];
+  
+            const filledEvents = [...apiEvents];
+  
+  while (filledEvents.length < 3) {
+    filledEvents.push({ ...EMPTY_EVENT });
   }
+  
+  setEvents(filledEvents.slice(0, 3));
+          }
+        } catch (err) {
+          console.log("Load error:", err);
+        }
+      }
+  
+      loadEvents();
+    }, []);
 
-  function saveHeading() {}
-  function saveSubHeading() {}
-  function saveEvent(index) {}
+  // ================= UPDATE HEADING =================
+  const updateHeading = async () => {
+    if (!heading.trim()) return alert("Heading required");
 
-  const rows = [
-    {
-      label: "Heading",
-      current: <p>{heading || "No heading set"}</p>,
-      input: (
-        <textarea
-          className="w-full h-20 p-2 border rounded resize-none"
-          onChange={(e) => setHeading(e.target.value)}
-        />
-      ),
-      button: <Button onClick={saveHeading}>Update</Button>
-    },
-    {
-      label: "Subheading",
-      current: <p>{subHeading || "No subheading set"}</p>,
-      input: (
-        <textarea
-          className="w-full h-20 p-2 border rounded resize-none"
-          onChange={(e) => setSubHeading(e.target.value)}
-        />
-      ),
-      button: <Button onClick={saveSubHeading}>Update</Button>
+    const res = await fetch(
+      "https://babycare-admin-backend-ulfg.onrender.com/events/heading",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ heading })
+      }
+    );
+
+    const data = await res.json();
+    if (data.success) alert("Heading updated");
+  };
+
+  // ================= UPDATE SUBHEADING =================
+  const updateSubHeading = async () => {
+    if (!subHeading.trim()) return alert("SubHeading required");
+
+    const res = await fetch(
+      "https://babycare-admin-backend-ulfg.onrender.com/events/subheading",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subHeading })
+      }
+    );
+
+    const data = await res.json();
+    if (data.success) alert("SubHeading updated");
+  };
+
+   // ================= ADD / UPDATE PROGRAM =================
+  const saveEvent = async (index) => {
+    const e = events[index];
+
+    if (!e.title.trim()) {
+      alert("Title is required");
+      return;
     }
-  ];
+
+    const formData = new FormData();
+
+formData.append("title", e.title);
+formData.append("description", e.description);    
+
+    if(e.date){
+      formData.append("date", e.date)
+    }
+    if(e.time){
+      formData.append("date", e.time)
+    }
+    if(e.location){
+      formData.append("date", e.location)
+    }
+
+
+    if (e.imageFile) formData.append("image", e.imageFile);
+
+    const url = e._id
+      ? `https://babycare-admin-backend-ulfg.onrender.com/events/item/${e._id}`
+      : `https://babycare-admin-backend-ulfg.onrender.com/events/item`;
+
+    const method = e._id ? "PATCH" : "POST";
+
+    const res = await fetch(url, {
+      method,
+      body: formData
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      alert(e._id ? "Event updated" : "Event added");
+      window.location.reload();
+    } else {
+      alert(data.message || "Something went wrong");
+    }
+  };
+
+  
+
+  
 
   return (
-    <div className="p-4 max-w-4xl mx-auto">
+  <div className="p-4 max-w-4xl mx-auto">
+    <table className="w-full border border-gray-300 border-collapse">
+      <thead>
+        <tr>
+          <th className="border p-3">#</th>
+          <th className="border p-3">Field</th>
+          <th className="border p-3">Data</th>
+          <th className="border p-3">Action</th>
+        </tr>
+      </thead>
 
-      {/* Heading + Subheading rows */}
-      {rows.map((row, index) => (
-        <div
-          key={index}
-          className="grid border p-3 grid-cols-3 gap-6 border-b py-6 items-center"
-        >
-          <h2 className="font-semibold">{row.label}</h2>
-          <div>{row.current}</div>
-          <div>
-            {row.input}
-            {row.button}
-          </div>
-        </div>
-      ))}
+      <tbody>
+        {/* ROWS (Heading/Subheading rows) */}
+                  {/* HEADING */}
+                  <tr>
+                    <td className="border p-3">1</td>
+                    <td className="border p-3">Heading</td>
+                    <td className="border p-3">
+                      <textarea
+                        className="w-full border p-2"
+                        value={heading}
+                        onChange={(e) => setHeading(e.target.value)}
+                      />
+                    </td>
+                    <td className="border p-3">
+                      <Button onClick={updateHeading}>Update</Button>
+                    </td>
+                  </tr>
+        
+                  {/* SUBHEADING */}
+                  <tr>
+                    <td className="border p-3">2</td>
+                    <td className="border p-3">Sub Heading</td>
+                    <td className="border p-3">
+                      <textarea
+                        className="w-full border p-2"
+                        value={subHeading}
+                        onChange={(e) => setSubHeading(e.target.value)}
+                      />
+                    </td>
+                    <td className="border p-3">
+                      <Button onClick={updateSubHeading}>Update</Button>
+                    </td>
+                  </tr>
 
-      {/* EVENT BOXES */}
-      <h2 className="text-2xl font-bold mt-10 mb-4">Event Boxes</h2>
+        {/* EVENT BOXES */}
+        {events.map((e, i) => (
+                    <tr key={i}>
+                      <td className="border p-3">{i + 3}</td>
+                      <td className="border p-3">Event {i + 1}</td>
+        
+                      <td className="border p-3 space-y-1">
 
-      {events.map((event, index) => (
-        <div
-          key={index}
-          className="border p-6 rounded-xl mb-6 shadow-sm bg-white"
-        >
-          <h3 className="font-bold text-lg mb-4">
-            Event Box {index + 1}
-          </h3>
+                        <input className="w-full border p-1" placeholder="Title" value={e.title}
+                          onChange={e => {
+                            setEvents(prev =>
+          prev.map((item, idx) =>
+            idx === i ? { ...item, title: e.target.value } : item
+          )
+        );
+        
+                          }} />
+        
+                        <textarea className="w-full border p-1" placeholder="Description" value={e.description}
+                          onChange={e => {
+                            setEvents(prev =>
+          prev.map((item, idx) =>
+            idx === i ? { ...item, description: e.target.value } : item
+          )
+        );
+                          }} />
+        
+                        <input className="w-full border p-1"  placeholder="Date" value={e.date}
+                          onChange={e => {
+                            setEvents(prev =>
+          prev.map((item, idx) =>
+            idx === i ? { ...item, date: e.target.value } : item
+          )
+        );
+                          }} />
+        
+                        <input className="w-full border p-1"  placeholder="Time" value={e.time}
+                          onChange={e => {
+                            setEvents(prev =>
+          prev.map((item, idx) =>
+            idx === i ? { ...item, time: e.target.value } : item
+          )
+        );
+                          }} />
+        
+                        <input className="w-full border p-1"  placeholder="Location" value={e.location}
+                          onChange={e => {
+                            setEvents(prev =>
+          prev.map((item, idx) =>
+            idx === i ? { ...item, location: e.target.value } : item
+          )
+        );
+                          }} />
+        
+                        
+        
+                        <input type="file" onChange={e => {
+        setEvents(prev =>
+          prev.map((item, idx) =>
+            idx === i ? { ...item, imageFile: e.target.files[0] } : item
+          )
+        );                }} />
+        
+                       
+                      </td>
+        
+                      <td className="border p-3">
+                        <Button onClick={() => saveEvent(i)}>
+                          {e._id ? "Update" : "Add"}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+      </tbody>
+    </table>
+  </div>
+);
 
-          <div className="grid grid-cols-3 gap-6 items-center py-4 border-b">
-            <p className="font-semibold">Date</p>
-            <p>{event.date || "Not set"}</p>
-
-            <input
-              type="text"
-              className="border p-2 rounded"
-              onChange={(e) =>
-                handleEventChange(index, "date", e.target.value)
-              }
-            />
-          </div>
-
-          <div className="grid grid-cols-3 gap-6 items-center py-4 border-b">
-            <p className="font-semibold">Image</p>
-            {event.image ? (
-              <img
-                src={URL.createObjectURL(event.image)}
-                className="w-24 h-24 rounded object-cover"
-              />
-            ) : (
-              <p>No image</p>
-            )}
-
-            <input
-              type="file"
-              onChange={(e) =>
-                handleEventChange(index, "image", e.target.files[0])
-              }
-            />
-          </div>
-
-          <div className="grid grid-cols-3 gap-6 items-center py-4 border-b">
-            <p className="font-semibold">Time</p>
-            <p>{event.time || "Not set"}</p>
-
-            <input
-              type="text"
-              className="border p-2 rounded"
-              onChange={(e) =>
-                handleEventChange(index, "time", e.target.value)
-              }
-            />
-          </div>
-
-          <div className="grid grid-cols-3 gap-6 items-center py-4 border-b">
-            <p className="font-semibold">Location</p>
-            <p>{event.location || "Not set"}</p>
-
-            <input
-              type="text"
-              className="border p-2 rounded"
-              onChange={(e) =>
-                handleEventChange(index, "location", e.target.value)
-              }
-            />
-          </div>
-
-          <div className="grid grid-cols-3 gap-6 items-center py-4 border-b">
-            <p className="font-semibold">Title</p>
-            <p>{event.title || "Not set"}</p>
-
-            <input
-              type="text"
-              className="border p-2 rounded"
-              onChange={(e) =>
-                handleEventChange(index, "title", e.target.value)
-              }
-            />
-          </div>
-
-          <div className="grid grid-cols-3 gap-6 items-center py-4">
-            <p className="font-semibold">Description</p>
-            <p>{event.desc || "Not set"}</p>
-
-            <textarea
-              className="border p-2 rounded h-20 resize-none"
-              onChange={(e) =>
-                handleEventChange(index, "desc", e.target.value)
-              }
-            ></textarea>
-          </div>
-
-          <div className="mt-4">
-            <Button onClick={() => saveEvent(index)}>Save Event {index + 1}</Button>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
 }
 
 export default Events;
