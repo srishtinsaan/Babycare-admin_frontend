@@ -1,204 +1,267 @@
 import { useState, useEffect } from "react";
 import Button from "../components/Button";
 
-export default function Blogs() {
+const EMPTY_BLOG = {
+  _id: null,
+  title: "",
+  description: "",
+  location : "",
+  date : "",
+  time : "",
+  imageFile: null,
+  imageUrl: "",
+};
+
+function blogs() {
   const [heading, setHeading] = useState("");
-  const [subHeading, setSubHeading] = useState("");
-
-  const [programs, setPrograms] = useState([
-    { title: "", desc: "", price: "", seats: "", lessons: "", hours: "", teacher: "", role: "", image: "", file: null },
-    { title: "", desc: "", price: "", seats: "", lessons: "", hours: "", teacher: "", role: "", image: "", file: null },
-    { title: "", desc: "", price: "", seats: "", lessons: "", hours: "", teacher: "", role: "", image: "", file: null }
-  ]);
-
-  // ================================
-  // LOAD DATA
-  // ================================
-  const loadProgramData = async () => {
-    try {
-      const res = await fetch("https://babycare-admin-backend-ulfg.onrender.com/programs");
-      const data = await res.json();
-
-      if (data.success) {
-        setHeading(data.data.heading);
-        setSubHeading(data.data.subHeading);
-        setPrograms(data.data.programs);
+    const [subHeading, setSubHeading] = useState("");
+    const [blogs, setblogs] = useState([
+      { ...EMPTY_BLOG },
+      { ...EMPTY_BLOG },
+      { ...EMPTY_BLOG }
+    ]);
+  
+  // ================= LOAD DATA =================
+    useEffect(() => {
+      async function loadblogs() {
+        try {
+          const res = await fetch(
+            "https://babycare-admin-backend-ulfg.onrender.com/blogs"
+          );
+          const data = await res.json();
+  
+          if (data.success) {
+            setHeading(data.data.heading || "");
+            setSubHeading(data.data.subHeading || "");
+  
+            const apiblogs = data.data.blog || [];
+  
+            const filledblogs = [...apiblogs];
+  
+  while (filledblogs.length < 3) {
+    filledblogs.push({ ...EMPTY_BLOG });
+  }
+  
+  setblogs(filledblogs.slice(0, 3));
+          }
+        } catch (err) {
+          console.log("Load error:", err);
+        }
       }
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  
+      loadblogs();
+    }, []);
 
-  useEffect(() => {
-    loadProgramData();
-  }, []);
-
-  // ================================
-  // UPDATE HEADING
-  // ================================
+  // ================= UPDATE HEADING =================
   const updateHeading = async () => {
-    await fetch("https://babycare-admin-backend-ulfg.onrender.com/programs/heading", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ heading })
-    });
-    alert("Heading updated!");
+    if (!heading.trim()) return alert("Heading required");
+
+    const res = await fetch(
+      "https://babycare-admin-backend-ulfg.onrender.com/blogs/heading",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ heading })
+      }
+    );
+
+    const data = await res.json();
+    if (data.success) alert("Heading updated");
   };
 
-  // ================================
-  // UPDATE SUB-HEADING
-  // ================================
+  // ================= UPDATE SUBHEADING =================
   const updateSubHeading = async () => {
-    await fetch("https://babycare-admin-backend-ulfg.onrender.com/programs/subheading", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ subHeading })
-    });
-    alert("Sub Heading updated!");
+    if (!subHeading.trim()) return alert("SubHeading required");
+
+    const res = await fetch(
+      "https://babycare-admin-backend-ulfg.onrender.com/blogs/subheading",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subHeading })
+      }
+    );
+
+    const data = await res.json();
+    if (data.success) alert("SubHeading updated");
   };
 
-  // ================================
-  // UPDATE A PROGRAM BOX
-  // ================================
-  const updateProgram = async (index) => {
-    const program = programs[index];
+   // ================= ADD / UPDATE PROGRAM =================
+  const saveblog = async (index) => {
+    const e = blogs[index];
+
+    if (!e.title.trim()) {
+      alert("Title is required");
+      return;
+    }
+
     const formData = new FormData();
 
-    Object.keys(program).forEach((key) => {
-      if (key === "file") {
-        if (program.file) formData.append("image", program.file);
-      } else {
-        formData.append(key, program[key]);
-      }
-    });
+formData.append("title", e.title);
+formData.append("description", e.description);    
 
-    formData.append("index", index);
+    if(e.date){
+      formData.append("date", e.date)
+    }
+    if(e.time){
+      formData.append("time", e.time)
+    }
+    if(e.location){
+      formData.append("location", e.location)
+    }
 
-    const res = await fetch("https://babycare-admin-backend-ulfg.onrender.com/programs/update", {
-      method: "POST",
+
+    if (e.imageFile) formData.append("image", e.imageFile);
+
+    const url = e._id
+      ? `https://babycare-admin-backend-ulfg.onrender.com/blogs/item/${e._id}`
+      : `https://babycare-admin-backend-ulfg.onrender.com/blogs/item`;
+
+    const method = e._id ? "PATCH" : "POST";
+
+    const res = await fetch(url, {
+      method,
       body: formData
     });
 
     const data = await res.json();
+
     if (data.success) {
-      alert(`Program ${index + 1} updated!`);
-      loadProgramData();
+      alert(e._id ? "blog updated" : "blog added");
+      window.location.reload();
+    } else {
+      alert(data.message || "Something went wrong");
     }
   };
 
+  
+
+  
+
   return (
-    <div className="p-3">
-      <table className="w-full border border-gray-300 border-collapse">
-        <thead>
-          <tr>
-            <th className="border p-3">S. No.</th>
-            <th className="border p-3">Field</th>
-            <th className="border p-3">Current</th>
-            <th className="border p-3">New</th>
-            <th className="border p-3">Action</th>
-          </tr>
-        </thead>
+  <div className="p-4 max-w-4xl mx-auto">
+    <table className="w-full border border-gray-300 border-collapse">
+      <thead>
+        <tr>
+          <th className="border p-3">#</th>
+          <th className="border p-3">Field</th>
+          <th className="border p-3">Data</th>
+          <th className="border p-3">Action</th>
+        </tr>
+      </thead>
 
-        <tbody>
+      <tbody>
+        {/* ROWS (Heading/Subheading rows) */}
+                  {/* HEADING */}
+                  <tr>
+                    <td className="border p-3">1</td>
+                    <td className="border p-3">Heading</td>
+                    <td className="border p-3">
+                      <textarea
+                        className="w-full border p-2"
+                        value={heading}
+                        onChange={(e) => setHeading(e.target.value)}
+                      />
+                    </td>
+                    <td className="border p-3">
+                      <Button onClick={updateHeading}>Update</Button>
+                    </td>
+                  </tr>
+        
+                  {/* SUBHEADING */}
+                  <tr>
+                    <td className="border p-3">2</td>
+                    <td className="border p-3">Sub Heading</td>
+                    <td className="border p-3">
+                      <textarea
+                        className="w-full border p-2"
+                        value={subHeading}
+                        onChange={(e) => setSubHeading(e.target.value)}
+                      />
+                    </td>
+                    <td className="border p-3">
+                      <Button onClick={updateSubHeading}>Update</Button>
+                    </td>
+                  </tr>
 
-          {/* HEADING */}
-          <tr>
-            <td className="border p-3">1</td>
-            <td className="border p-3 font-semibold">Heading</td>
-            <td className="border p-3">{heading}</td>
-            <td className="border p-3">
-              <textarea className="w-full border p-2" value={heading} onChange={(e) => setHeading(e.target.value)} />
-            </td>
-            <td className="border p-3"><Button onClick={updateHeading}>Update</Button></td>
-          </tr>
+        {/* blog BOXES */}
+        {blogs.map((e, i) => (
+                    <tr key={i}>
+                      <td className="border p-3">{i + 3}</td>
+                      <td className="border p-3">Blog {i + 1}</td>
+        
+                      <td className="border p-3 space-y-1">
 
-          {/* SUBHEADING */}
-          <tr>
-            <td className="border p-3">2</td>
-            <td className="border p-3 font-semibold">Sub Heading</td>
-            <td className="border p-3">{subHeading}</td>
-            <td className="border p-3">
-              <textarea className="w-full border p-2" value={subHeading} onChange={(e) => setSubHeading(e.target.value)} />
-            </td>
-            <td className="border p-3"><Button onClick={updateSubHeading}>Update</Button></td>
-          </tr>
-
-          {/* PROGRAM BOXES */}
-          {programs.map((p, i) => (
-            <tr key={i}>
-              <td className="border p-3">{i + 3}</td>
-              <td className="border p-3 font-semibold">Blog {i + 1}</td>
-
-              <td className="border p-3">
-  <div className="space-y-1 text-gray-700">
-    <p><b>Title:</b></p>
-    <p><b>Desc:</b></p>
-    <p><b>Teacher:</b></p>
-    <p><b>Role:</b></p>
+                        <input className="w-full border p-1" placeholder="Title" value={e.title}
+                          onChange={e => {
+                            setblogs(prev =>
+          prev.map((item, idx) =>
+            idx === i ? { ...item, title: e.target.value } : item
+          )
+        );
+        
+                          }} />
+        
+                        <textarea className="w-full border p-1" placeholder="Description" value={e.description}
+                          onChange={e => {
+                            setblogs(prev =>
+          prev.map((item, idx) =>
+            idx === i ? { ...item, description: e.target.value } : item
+          )
+        );
+                          }} />
+        
+                        <input className="w-full border p-1"  placeholder="Date" value={e.date}
+                          onChange={e => {
+                            setblogs(prev =>
+          prev.map((item, idx) =>
+            idx === i ? { ...item, date: e.target.value } : item
+          )
+        );
+                          }} />
+        
+                        <input className="w-full border p-1"  placeholder="Time" value={e.time}
+                          onChange={e => {
+                            setblogs(prev =>
+          prev.map((item, idx) =>
+            idx === i ? { ...item, time: e.target.value } : item
+          )
+        );
+                          }} />
+        
+                        <input className="w-full border p-1"  placeholder="Location" value={e.location}
+                          onChange={e => {
+                            setblogs(prev =>
+          prev.map((item, idx) =>
+            idx === i ? { ...item, location: e.target.value } : item
+          )
+        );
+                          }} />
+        
+                        
+        
+                        <input type="file" onChange={e => {
+        setblogs(prev =>
+          prev.map((item, idx) =>
+            idx === i ? { ...item, imageFile: e.target.files[0] } : item
+          )
+        );                }} />
+        
+                       
+                      </td>
+        
+                      <td className="border p-3">
+                        <Button onClick={() => saveblog(i)}>
+                          {e._id ? "Update" : "Add"}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+      </tbody>
+    </table>
   </div>
-</td>
+);
 
-
-              <td className="border p-3">
-
-                <input type="text" placeholder="Title"
-                  className="w-full border p-2 mb-1"
-                  value={p.title}
-                  onChange={(e) => {
-                    const updated = [...programs];
-                    updated[i].title = e.target.value;
-                    setPrograms(updated);
-                  }}
-                />
-
-                <textarea placeholder="Description"
-                  className="w-full border p-2 mb-1"
-                  value={p.desc}
-                  onChange={(e) => {
-                    const updated = [...programs];
-                    updated[i].desc = e.target.value;
-                    setPrograms(updated);
-                  }}
-                />
-
-                
-                
-
-                <input type="text" placeholder="Teacher Name"
-                  className="w-full border p-2 mb-1"
-                  value={p.teacher}
-                  onChange={(e) => {
-                    const updated = [...programs];
-                    updated[i].teacher = e.target.value;
-                    setPrograms(updated);
-                  }}
-                />
-
-                <input type="text" placeholder="Teacher Role"
-                  className="w-full border p-2 mb-1"
-                  value={p.role}
-                  onChange={(e) => {
-                    const updated = [...programs];
-                    updated[i].role = e.target.value;
-                    setPrograms(updated);
-                  }}
-                />
-
-                <input type="file" className="w-full" onChange={(e) => {
-                  const updated = [...programs];
-                  updated[i].file = e.target.files[0];
-                  setPrograms(updated);
-                }} />
-              </td>
-
-              <td className="border p-3">
-                <Button onClick={() => updateProgram(i)}>Update</Button>
-              </td>
-            </tr>
-          ))}
-
-        </tbody>
-      </table>
-    </div>
-  );
 }
+
+export default blogs;
