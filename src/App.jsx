@@ -19,10 +19,10 @@ import Auth from "./pages/Auth";
 import Testimonials from "./pages/Testimonials";
 
 // ✅ Protected route component
-const ProtectedRoute = ({ children }) => {
-  const isAuthenticated = localStorage.getItem("token");
-  return isAuthenticated ? children : <Navigate to="/" replace />;
-};
+// const ProtectedRoute = ({ children }) => {
+//   const isAuthenticated = localStorage.getItem("token");
+//   return isAuthenticated ? children : <Navigate to="/" replace />;
+// };
 
 const App = () => {
 
