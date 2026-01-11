@@ -1,188 +1,224 @@
 import { useState, useEffect } from "react";
 import Button from "../components/Button";
 
-export default function Team() {
+  const EMPTY_team = {
+  _id: null,
+  name: "",
+  designation : "",
+  imageFile: null,
+  imageUrl: "",
+};
+
+function Teams() {
   const [heading, setHeading] = useState("");
-  const [subHeading, setSubHeading] = useState("");
+    const [subHeading, setSubHeading] = useState("");
+    const [teams, setteams] = useState([
+      { ...EMPTY_team },
+      { ...EMPTY_team },
+      { ...EMPTY_team }
+    ]);
+  
 
-  const [team, setTeam] = useState([
-    { name: "", role: "", image: "", file: null },
-    { name: "", role: "", image: "", file: null },
-    { name: "", role: "", image: "", file: null },
-    { name: "", role: "", image: "", file: null }
-  ]);
+  // ================= LOAD DATA =================
+      useEffect(() => {
+        async function loadteams() {
+          try {
+            const res = await fetch(
+              "https://babycare-admin-backend-ulfg.onrender.com/teams"
+            );
+            const data = await res.json();
+    
+            if (data.success) {
+              setHeading(data.data.heading || "");
+              setSubHeading(data.data.subHeading || "");
+    
+              const apiteams = data.data.team || [];
+    
+              const filledteams = [...apiteams];
+    
+    while (filledteams.length < 3) {
+      filledteams.push({ ...EMPTY_team });
+    }
 
-  // ================================
-  // LOAD TEAM DATA
-  // ================================
-  const loadTeamData = async () => {
-    try {
-      const res = await fetch("https://babycare-admin-backend-ulfg.onrender.com/team");
+    setteams(filledteams.slice(0, 3));
+            }
+          } catch (err) {
+            console.log("Load error:", err);
+          }
+        }
+    
+        loadteams();
+      }, []);
+  
+    // ================= UPDATE HEADING =================
+    const updateHeading = async () => {
+      if (!heading.trim()) return alert("Heading required");
+  
+      const res = await fetch(
+        "https://babycare-admin-backend-ulfg.onrender.com/teams/heading",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ heading })
+        }
+      );
+  
       const data = await res.json();
+      if (data.success) alert("Heading updated");
+    };
+  
+    // ================= UPDATE SUBHEADING =================
+    const updateSubHeading = async () => {
+      if (!subHeading.trim()) return alert("SubHeading required");
+  
+      const res = await fetch(
+        "https://babycare-admin-backend-ulfg.onrender.com/teams/subheading",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ subHeading })
+        }
+      );
+  
+      const data = await res.json();
+      if (data.success) alert("SubHeading updated");
+    };
+  
+     // ================= ADD / UPDATE PROGRAM =================
+    const saveteam = async (index) => {
+      const e = teams[index];
+  
+      if (!e.name.trim()) {
+        alert("Name is required");
+        return;
+      }
+  
+      const formData = new FormData();
+  
+  formData.append("name", e.name);
+  formData.append("designation", e.designation);
 
+  
+      if (e.imageFile) formData.append("image", e.imageFile);
+  
+      const url = e._id
+        ? `https://babycare-admin-backend-ulfg.onrender.com/teams/item/${e._id}`
+        : `https://babycare-admin-backend-ulfg.onrender.com/teams/item`;
+  
+      const method = e._id ? "PATCH" : "POST";
+  
+      const res = await fetch(url, {
+        method,
+        body: formData
+      });
+  
+      const data = await res.json();
+  
       if (data.success) {
-        setHeading(data.data.heading);
-        setSubHeading(data.data.subHeading);
-        setTeam(data.data.team);
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  useEffect(() => {
-    loadTeamData();
-  }, []);
-
-  // ================================
-  // UPDATE HEADING
-  // ================================
-  const updateHeading = async () => {
-    await fetch("https://babycare-admin-backend-ulfg.onrender.com/team/heading", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ heading })
-    });
-    alert("Heading updated!");
-  };
-
-  // ================================
-  // UPDATE SUB HEADING
-  // ================================
-  const updateSubHeading = async () => {
-    await fetch("https://babycare-admin-backend-ulfg.onrender.com/team/subheading", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ subHeading })
-    });
-    alert("Sub Heading updated!");
-  };
-
-  // ================================
-  // UPDATE TEAM MEMBER
-  // ================================
-  const updateTeamMember = async (index) => {
-    const member = team[index];
-    const formData = new FormData();
-
-    Object.keys(member).forEach((key) => {
-      if (key === "file") {
-        if (member.file) formData.append("image", member.file);
+        alert(e._id ? "team updated" : "team added");
+        window.location.reload();
       } else {
-        formData.append(key, member[key]);
+        alert(data.message || "Something went wrong");
       }
-    });
+    };
+ 
 
-    formData.append("index", index);
-
-    const res = await fetch("https://babycare-admin-backend-ulfg.onrender.com/team/update", {
-      method: "POST",
-      body: formData
-    });
-
-    const data = await res.json();
-    if (data.success) {
-      alert(`Team Member ${index + 1} updated!`);
-      loadTeamData();
-    }
-  };
-
-  return (
-    <div className="p-3">
+   return (
+    <div className="p-4 max-w-4xl mx-auto">
       <table className="w-full border border-gray-300 border-collapse">
         <thead>
           <tr>
-            <th className="border p-3">S. No.</th>
+            <th className="border p-3">#</th>
             <th className="border p-3">Field</th>
-            <th className="border p-3">Current</th>
-            <th className="border p-3">New</th>
+            <th className="border p-3">Data</th>
             <th className="border p-3">Action</th>
           </tr>
         </thead>
-
+  
         <tbody>
+          {/* ROWS (Heading/Subheading rows) */}
+                    {/* HEADING */}
+                    <tr>
+                      <td className="border p-3">1</td>
+                      <td className="border p-3">Heading</td>
+                      <td className="border p-3">
+                        <textarea
+                          className="w-full border p-2"
+                          value={heading}
+                          onChange={(e) => setHeading(e.target.value)}
+                        />
+                      </td>
+                      <td className="border p-3">
+                        <Button onClick={updateHeading}>Update</Button>
+                      </td>
+                    </tr>
+          
+                    {/* SUBHEADING */}
+                    <tr>
+                      <td className="border p-3">2</td>
+                      <td className="border p-3">Sub Heading</td>
+                      <td className="border p-3">
+                        <textarea
+                          className="w-full border p-2"
+                          value={subHeading}
+                          onChange={(e) => setSubHeading(e.target.value)}
+                        />
+                      </td>
+                      <td className="border p-3">
+                        <Button onClick={updateSubHeading}>Update</Button>
+                      </td>
+                    </tr>
+  
+          {/* team BOXES */}
+          {teams.map((e, i) => (
+                      <tr key={i}>
+                        <td className="border p-3">{i + 3}</td>
+                        <td className="border p-3">team {i + 1}</td>
+          
+                        <td className="border p-3 space-y-1">
+  
+                          <input className="w-full border p-1" placeholder="Name" value={e.name}
+                            onChange={e => {
+                              setteams(prev =>
+            prev.map((item, idx) =>
+              idx === i ? { ...item, name: e.target.value } : item
+            )
+          );
+          
+                            }} />
 
-          {/* HEADING */}
-          <tr>
-            <td className="border p-3">1</td>
-            <td className="border p-3 font-semibold">Heading</td>
-            <td className="border p-3">{heading}</td>
-            <td className="border p-3">
-              <textarea className="w-full border p-2"
-                value={heading}
-                onChange={(e) => setHeading(e.target.value)} />
-            </td>
-            <td className="border p-3">
-              <Button onClick={updateHeading}>Update</Button>
-            </td>
-          </tr>
-
-          {/* SUB HEADING */}
-          <tr>
-            <td className="border p-3">2</td>
-            <td className="border p-3 font-semibold">Sub Heading</td>
-            <td className="border p-3">{subHeading}</td>
-            <td className="border p-3">
-              <textarea className="w-full border p-2"
-                value={subHeading}
-                onChange={(e) => setSubHeading(e.target.value)} />
-            </td>
-            <td className="border p-3">
-              <Button onClick={updateSubHeading}>Update</Button>
-            </td>
-          </tr>
-
-          {/* TEAM MEMBERS */}
-          {team.map((m, i) => (
-            <tr key={i}>
-              <td className="border p-3">{i + 3}</td>
-              <td className="border p-3 font-semibold">Team Member {i + 1}</td>
-
-              <td className="border p-3">
-                <div className="space-y-1 text-gray-700">
-                  <p><b>Name:</b> {m.name}</p>
-                  <p><b>Role:</b> {m.role}</p>
-                </div>
-              </td>
-
-              <td className="border p-3">
-
-                <input type="text" placeholder="Name"
-                  className="w-full border p-2 mb-1"
-                  value={m.name}
-                  onChange={(e) => {
-                    const updated = [...team];
-                    updated[i].name = e.target.value;
-                    setTeam(updated);
-                  }}
-                />
-
-                <input type="text" placeholder="Role"
-                  className="w-full border p-2 mb-1"
-                  value={m.role}
-                  onChange={(e) => {
-                    const updated = [...team];
-                    updated[i].role = e.target.value;
-                    setTeam(updated);
-                  }}
-                />
-
-                <input type="file" className="w-full"
-                  onChange={(e) => {
-                    const updated = [...team];
-                    updated[i].file = e.target.files[0];
-                    setTeam(updated);
-                  }} />
-              </td>
-
-              <td className="border p-3">
-                <Button onClick={() => updateTeamMember(i)}>Update</Button>
-              </td>
-            </tr>
-          ))}
-
+                            <input className="w-full border p-1"  placeholder="Profession" value={e.designation}
+                            onChange={e => {
+                              setteams(prev =>
+            prev.map((item, idx) =>
+              idx === i ? { ...item, designation: e.target.value } : item
+            )
+          );
+                            }} />
+      
+          
+                
+                          <input type="file" onChange={e => {
+          setteams(prev =>
+            prev.map((item, idx) =>
+              idx === i ? { ...item, imageFile: e.target.files[0] } : item
+            )
+          );                }} />
+          
+                         
+                        </td>
+          
+                        <td className="border p-3">
+                          <Button onClick={() => saveteam(i)}>
+                            {e._id ? "Update" : "Add"}
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
         </tbody>
       </table>
     </div>
   );
-}
+ };
+
+export default Teams;
