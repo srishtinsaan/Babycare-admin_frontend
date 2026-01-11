@@ -47,7 +47,6 @@ function Testimonials() {
             console.log("Load error:", err);
           }
         }
-    
         loadtestimonials();
       }, []);
   
@@ -98,7 +97,7 @@ function Testimonials() {
   
   formData.append("name", e.name);
   formData.append("description", e.description);    
-  formData.append("designation", e.designation);
+  formData.append("designation", e.designation); file
 
   
       if (e.imageFile) formData.append("image", e.imageFile);
