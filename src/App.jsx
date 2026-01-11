@@ -13,7 +13,7 @@ import Services from "./pages/Services"
 import Programs from "./pages/Programs";
 import Events from "./pages/Events";
 import Blogs from "./pages/Blogs";
-import Team from "./pages/Team";
+import Teams from "./pages/Teams";
 import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import Testimonials from "./pages/Testimonials";
@@ -51,7 +51,7 @@ const App = () => {
           <Route path="programs" element={<Programs />} />
           <Route path="events" element={<Events />} />
           <Route path="blogs" element={<Blogs />} />
-          <Route path="team" element={<Team />} />
+          <Route path="teams" element={<Teams />} />
           <Route path="testimonials" element={<Testimonials />} />
           <Route path="settings" element={<Settings />} />
         </Route>
