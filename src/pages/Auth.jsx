@@ -10,10 +10,10 @@ const Auth = () => {
   const handleLogin = (e) => {
     e.preventDefault();
 
-    // Dummy auth — replace with backend API later
+    // Dummy auth
      if (email === "admin@babycare.com" && password === "admin123") {
       localStorage.setItem("token", "dummyToken123"); // mark as logged in
-      navigate("/dashboard"); // redirect to admin  
+      navigate("/home"); // redirect to admin  
     } else {
       alert("Invalid credentials");
     }
