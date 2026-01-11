@@ -38,7 +38,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     { name: "Programs", icon: BookOpen, path: "/programs" },
     { name: "Events", icon: Calendar, path: "/events" },
     { name: "Blogs", icon: FileText, path: "/blogs" },
-    { name: "Team", icon: Users, path: "/team" },
+    { name: "Teams", icon: Users, path: "/teams" },
     { name: "Testimonials", icon: MessageSquareQuote, path: "/testimonials" },
     { name: "Settings", icon: Settings, path: "/settings" },
   ];
