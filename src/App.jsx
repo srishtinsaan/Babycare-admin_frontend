@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   Navigate,
+  
 } from "react-router-dom";
 
 import Layout from "./pages/Layout";
@@ -18,11 +19,11 @@ import Settings from "./pages/Settings";
 import Auth from "./pages/Auth";
 import Testimonials from "./pages/Testimonials";
 
-// ✅ Protected route component
-// const ProtectedRoute = ({ children }) => {
-//   const isAuthenticated = localStorage.getItem("token");
-//   return isAuthenticated ? children : <Navigate to="/" replace />;
-// };
+// Protected route component
+const ProtectedRoute = ({ children }) => {
+  const isAuthenticated = localStorage.getItem("token");
+  return isAuthenticated ? children : <Navigate to="/" replace />;
+};
 
 const App = () => {
 
