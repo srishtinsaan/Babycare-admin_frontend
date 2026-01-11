@@ -1,54 +1,59 @@
 import { useState, useEffect } from "react";
 import Button from "../components/Button";
+import { useNavigate } from "react-router-dom";
+
 
 function Settings() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setusername] = useState("");
+  const [password, setpassword] = useState("");
 
-  // LOAD existing settings
-  useEffect(() => {
-    async function loadSettings() {
-      try {
-        const res = await fetch("https://your-backend-url.com/settings");
-        const data = await res.json();
-        if (data.success) {
-          setUsername(data.data.username || "");
-          setPassword(""); // never load real password for safety
-        }
-      } catch (err) {
-        console.log("Settings load error:", err);
+
+  
+
+  // ================= UPDATE username =================
+  const updateusername = async () => {
+    if (!username.trim()) return alert("username required");
+
+    const res = await fetch(
+      "https://babycare-admin-backend-ulfg.onrender.com/settings/username",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username })
       }
-    }
-    loadSettings();
-  }, []);
-
-  // UPDATE USERNAME
-  const updateUsername = async () => {
-    if (!username.trim()) return alert("Username required");
-
-    const res = await fetch("https://your-backend-url.com/settings/username", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username })
-    });
+    );
 
     const data = await res.json();
-    if (data.success) alert("Username updated");
+    if (data.success) alert("username updated");
   };
 
-  // UPDATE PASSWORD
-  const updatePassword = async () => {
-    if (!password.trim()) return alert("Password required");
+  // ================= UPDATE password =================
+  const updatepassword = async () => {
+    if (!password.trim()) return alert("password required");
 
-    const res = await fetch("https://your-backend-url.com/settings/password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password })
-    });
+    const res = await fetch(
+      "https://babycare-admin-backend-ulfg.onrender.com/settings/password",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password })
+      }
+    );
 
     const data = await res.json();
-    if (data.success) alert("Password updated");
+    if (data.success) alert("password updated");
   };
+
+  const navigate = useNavigate();
+
+function logout() {
+  localStorage.removeItem("token");   
+  localStorage.removeItem("user");    
+  navigate("/");                
+}
+
+
+  
 
   return (
     <div className="p-4 max-w-4xl mx-auto">
@@ -72,12 +77,12 @@ function Settings() {
               <input
                 className="w-full border p-2"
                 value={username}
-                onChange={e => setUsername(e.target.value)}
+                onChange={e => setusername(e.target.value)}
                 placeholder="Enter new username"
               />
             </td>
             <td className="border p-3">
-              <Button onClick={updateUsername}>Update</Button>
+              <Button onClick={updateusername}>Update</Button>
             </td>
           </tr>
 
@@ -90,17 +95,29 @@ function Settings() {
                 type="password"
                 className="w-full border p-2"
                 value={password}
-                onChange={e => setPassword(e.target.value)}
+                onChange={e => setpassword(e.target.value)}
                 placeholder="Enter new password"
               />
             </td>
             <td className="border p-3">
-              <Button onClick={updatePassword}>Update</Button>
+              <Button onClick={updatepassword}>Update</Button>
             </td>
           </tr>
 
+          
+            
+
         </tbody>
+       
+          
       </table>
+
+       {/* LOGOUT BUTTON */}
+      <div className="mt-4">
+        <Button onClick={logout}>Logout</Button>
+      </div>
+              
+
     </div>
   );
 }
