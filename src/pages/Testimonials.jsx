@@ -7,8 +7,9 @@ import Button from "../components/Button";
   designation : "",
   description: "",
   imageFile: null,
-  imageUrl: "",
+  imageUrl: "", 
 };
+
 
 function Testimonials() {
   const [heading, setHeading] = useState("");
@@ -97,7 +98,7 @@ function Testimonials() {
   
   formData.append("name", e.name);
   formData.append("description", e.description);    
-  formData.append("designation", e.designation); file
+  formData.append("designation", e.designation); 
 
   
       if (e.imageFile) formData.append("image", e.imageFile);
