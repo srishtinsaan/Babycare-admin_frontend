@@ -15,7 +15,7 @@ function Settings() {
     if (!username.trim()) return alert("username required");
 
     const res = await fetch(
-      "https://babycare-admin-backend-ulfg.onrender.com/settings/username",
+      "https://babycare-admin-backend-ulfg.onrender.com/settings/newusername",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -32,7 +32,7 @@ function Settings() {
     if (!password.trim()) return alert("password required");
 
     const res = await fetch(
-      "https://babycare-admin-backend-ulfg.onrender.com/settings/password",
+      "https://babycare-admin-backend-ulfg.onrender.com/settings/newpassword",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
